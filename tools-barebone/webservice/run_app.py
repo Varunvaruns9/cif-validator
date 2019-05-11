@@ -76,4 +76,4 @@ if __name__ == "__main__":
     # if deployed with Apache
     # Use the local version of app, not the installed one
     app.use_x_sendfile = False
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

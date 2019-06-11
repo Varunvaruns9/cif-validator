@@ -15,7 +15,6 @@
       <thead>
         <tr>
           <th>Serial No.</th>
-          <th>File ID</th>
           <th>File URL</th>
         </tr>
       </thead>
@@ -24,8 +23,7 @@
           {% for item in data %}
           <tr>
           <td>{{ loop.index + (page - 1) * per_page }}</td>
-          <td>{{item.ID}}</td>
-          <td><a href=""{{item.URL}}"">{{item.URL}}</a></td>
+          <td><a href="{{item}}">{{item}}</a></td>
           </tr>
           {% endfor %}
       </tbody>

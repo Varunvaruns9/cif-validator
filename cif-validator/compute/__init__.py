@@ -5,7 +5,7 @@ import pycodcif
 import os, sys
 import json
 import random
-from flask_paginate import Pagination, get_page_parameter
+from flask_paginate import Pagination, get_page_args
 lib_path = os.path.abspath(os.path.join('..', 'tools-barebone', 'webservice'))
 sys.path.append(lib_path)
 from run_app import mysql
@@ -22,16 +22,18 @@ def get_users(offset=0, per_page=50):
 @blueprint.route('/database/page/<int:page>')
 def database(page):
     page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
-    total = len(users)
     pagination_users = get_users(offset=offset, per_page=per_page)
-    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-    #Create Cursor
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT ID, URL FROM cif;', (startat,perpage))
-    #Close Connection
-    cur.close()
-    data = list(cur.fetchall())
-    return flask.render_template('db.html', users=pagination_users, page=page, per_page=per_page, pagination=pagination, data = data)
+    pagination = Pagination(page=page, per_page=per_page, total=45947, css_framework='bootstrap4')
+    # onlyfiles = [f for f in os.listdir('.') if os.path.isfile(os.path.join('.', f))]
+    # return str(os.listdir('./code/webservice/'))
+    if page*per_page<=45947:
+        data = open("./code/webservice/COD-selection.txt", 'r').read().splitlines()[(page-1)*per_page: page*per_page]
+    else:
+        data = open("./code/webservice/COD-selection.txt", 'r').read().splitlines()[(page-1)*per_page: ]
+    # data = urllib.request.urlopen("http://www.crystallography.net/cod/result.php?format=urls&CODSESSION=oo6nu37qiglf2p9f8uioqc0jum7ivd2d")
+    # return 'lol'
+    return flask.render_template('db.html', page=page, per_page=per_page, pagination=pagination, data = data)
+
 
 @blueprint.route('/process_structure/', methods=['GET', 'POST'])
 def process_structure():
@@ -81,6 +83,11 @@ def validate():
             error = 'Error: ' + e
             data = [{'err_msg': error, }]
         return json.dumps(data)
+
+
+@blueprint.route('/visualize/')
+def visualize():
+    return flask.render_template('player.html')
 
 
 @blueprint.route('/')
